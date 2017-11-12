@@ -143,7 +143,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     """
     for _ in range(epochs):
         for image, label in get_batches_fn(batch_size):
-            feed = {input_image: image, correct_label: label, keep_prob:1.0}
+            feed = {input_image: image, correct_label: label, keep_prob:0.8}
             sess.run(train_op, feed_dict=feed)
 
             feed[keep_prob] = 1.0
@@ -191,7 +191,7 @@ def run():
 
         sess.run(tf.global_variables_initializer())
         
-        train_nn(sess, 1, 10, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, 0.01)
+        train_nn(sess, 5, 10, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, 0.01)
 
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
