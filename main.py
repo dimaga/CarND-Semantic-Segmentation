@@ -141,14 +141,19 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    for _ in range(epochs):
+    for epoch in range(epochs):
+        print("Epoch", epoch + 1)
         for image, label in get_batches_fn(batch_size):
-            feed = {input_image: image, correct_label: label, keep_prob:0.8}
+            feed = {input_image: image,
+                    correct_label: label,
+                    keep_prob: 0.8,
+                    learning_rate: 1e-4}
             sess.run(train_op, feed_dict=feed)
 
             feed[keep_prob] = 1.0
             print(sess.run(cross_entropy_loss, feed_dict=feed))
-            
+        print('-' * 80)
+        print()
     pass
 tests.test_train_nn(train_nn)
 
@@ -183,15 +188,17 @@ def run():
 
         correct_label = tf.placeholder(tf.float32, [None, image_shape[0], image_shape[1], num_classes])
 
+        learning_rate = tf.placeholder(tf.float32)
+
         logits, train_op, cross_entropy_loss = optimize(
             layer_output,
             correct_label,
-            0.01,
+            learning_rate,
             num_classes)
 
         sess.run(tf.global_variables_initializer())
         
-        train_nn(sess, 5, 10, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, 0.01)
+        train_nn(sess, 30, 1, get_batches_fn, train_op, cross_entropy_loss, input_image, correct_label, keep_prob, learning_rate)
 
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
